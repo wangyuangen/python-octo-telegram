@@ -1,0 +1,13 @@
+{
+    "roledefs": {
+        "hotfix": [
+            "Administrator@10.1.1.108:22",
+	    "Administrator@10.1.1.171:22"
+           
+        ]
+    },
+    "passwords": {
+        "Administrator@10.1.1.108:22": "123456",
+	"Administrator@10.1.1.171:22":"Servers8520."
+    }
+}
