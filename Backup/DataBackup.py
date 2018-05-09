@@ -17,21 +17,21 @@ access_key_id = config.get('api','access_key_id')
 access_key_secret =  config.get('api','access_key_secret')
 
 class ResponseBase:
-    def __int__(self):
+    def __init__(self):
         self.RequestId = ''
         self.HostId = ''
         self.Code = ''
         self.Message = ''
 
 class CheckBackupRep(ResponseBase):
-    def __int__(self):
+    def __init__(self):
         self.TotalRecordCount = 0
         self.PageNumber = 0
         self.PageRecordCount = 0
         self.Items = ''
 
 class Backup:
-    def __int__(self):
+    def __init__(self):
         self.BackupId = 0
         self.DBInstanceId = ''
         self.HostInstanceID = ''
