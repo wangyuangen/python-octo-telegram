@@ -43,7 +43,7 @@ class Ui_LogOn(QtGui.QMainWindow):
         self.pb_logon.setGeometry(QtCore.QRect(210, 150, 151, 31))
         self.pb_logon.setObjectName(_fromUtf8("pb_logon"))
         self.lb_headImg = QtGui.QLabel(LogOn)
-        self.lb_headImg.setGeometry(QtCore.QRect(40, 40, 111, 91))
+        self.lb_headImg.setGeometry(QtCore.QRect(40, 40, 110, 90))
         self.lb_headImg.setObjectName(_fromUtf8("lb_headImg"))
         self.pb_register = QtGui.QPushButton(LogOn)
         self.pb_register.setGeometry(QtCore.QRect(390, 50, 75, 23))

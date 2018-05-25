@@ -34,7 +34,7 @@ class Ui_MainForm(QtGui.QMainWindow):
         MainForm.resize(383, 629)
         MainForm.setWindowTitle(_fromUtf8(""))
         self.lb_headImg = QtGui.QLabel(MainForm)
-        self.lb_headImg.setGeometry(QtCore.QRect(10, 30, 101, 81))
+        self.lb_headImg.setGeometry(QtCore.QRect(10, 30, 110, 90))
         self.lb_headImg.setObjectName(_fromUtf8("lb_headImg"))
         self.lv_customer = QtGui.QListView(MainForm)
         self.lv_customer.setGeometry(QtCore.QRect(10, 130, 361, 461))
