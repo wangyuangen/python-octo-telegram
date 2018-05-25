@@ -38,7 +38,7 @@ class logonEvent:
         data = sqlHelper.queryAll(sql)
         model = QtGui.QStandardItemModel(self.main.lv_customer)
         for row in data:
-            item = QtGui.QStandardItem(row['NickName'])
+            item = QtGui.QStandardItem(row['NickName'].decode('utf8'))
             icon_expand = QtGui.QIcon(row['HeadImg'])
             item.setIcon(icon_expand)
             model.appendRow(item)
@@ -48,7 +48,7 @@ class logonEvent:
         png = QtGui.QPixmap(headImg)
         self.main.lb_headImg.setScaledContents(True)
         self.main.lb_headImg.setPixmap(png)
-        self.main.lb_nick.setText(nickName)
+        self.main.lb_nick.setText(nickName.decode('utf8'))
         self.main.lv_customer.setModel(model)
 
 
@@ -91,18 +91,18 @@ class mainEvent:
     def openMessage(self,index):
         #model = QtGui.QStandardItemModel(self.main.lv_customer)
         #q = index.row()
-        target_nickName = str(index.data().toString()).strip()
+        target_nickName = unicode(index.data().toString().toUtf8(),'utf-8','ignore').encode('utf-8')
         sql = "select NickName,Account,CustName,Address,Mobile,FontColorId,Sex,HeadImg \
                from customer as cust \
                inner join accountinfo as info \
                on cust.AcctountInfoId = info.Id where NickName = '{0}'".format(target_nickName)
         model = sqlHelper.queryOnlyRow(sql)
         self.message.lb_sex.setText(u"性别:男" if model['Sex'] == 1 else u"性别:女")
-        self.message.lb_nickName.setText(model['NickName'])
+        self.message.lb_nickName.setText(model['NickName'].decode('utf8'))
         png = QtGui.QPixmap(model['HeadImg'])
         self.message.lb_headImg.setScaledContents(True)
         self.message.lb_headImg.setPixmap(png)
-        currentLoggon_nickName = str(self.main.lb_nick.text())
+        currentLoggon_nickName = unicode(self.main.lb_nick.text().toUtf8(),'utf-8','ignore').encode('utf-8')
         self.showMessageBox(target_nickName,currentLoggon_nickName)
         self.message.show()
 
@@ -115,7 +115,7 @@ class mainEvent:
         data = sqlHelper.queryAll(sql)
         itemModel = QtGui.QStandardItemModel(self.main.lv_customer)
         for row in data:
-            item = QtGui.QStandardItem(row['Message'])
+            item = QtGui.QStandardItem(row['Message'].decode('utf8'))
             sendAccount = row['SendAccount']
             sql = "select * from AccountInfo where Id = {0}".format(sendAccount)
             sendData = sqlHelper.queryOnlyRow(sql)
