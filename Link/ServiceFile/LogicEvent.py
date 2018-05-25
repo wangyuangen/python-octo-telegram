@@ -62,10 +62,11 @@ class registerEvent:
         }
         sqlHelper.insert("fontColor",fontColorData)
         colorId = sqlHelper.getLastInsertRowId()
+        headImg = str(self.register.le_headImg.text()).replace('\\', '\\\\')
         accountInfoData={
             "Account":str(self.register.le_accountName.text()),
             "Pwd":str(self.register.le_pwd.text()),
-            "HeadImg":str(self.register.le_headImg.text()).replace('\',''\\'),
+            "HeadImg":headImg,
             "FontColorId":colorId,
         }
         sqlHelper.insert("accountInfo",accountInfoData)
