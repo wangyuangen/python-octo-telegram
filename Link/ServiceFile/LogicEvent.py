@@ -97,7 +97,7 @@ class mainEvent:
                inner join accountinfo as info \
                on cust.AcctountInfoId = info.Id where NickName = '{0}'".format(target_nickName)
         model = sqlHelper.queryOnlyRow(sql)
-        self.message.lb_sex.setText("Sex:Male" if model['Sex'] == 1 else "Sex:Female")
+        self.message.lb_sex.setText("性别:男" if model['Sex'] == 1 else "性别:女")
         self.message.lb_nickName.setText(model['NickName'])
         png = QtGui.QPixmap(model['HeadImg'])
         self.message.lb_headImg.setScaledContents(True)
