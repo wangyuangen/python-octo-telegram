@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import sys
 sys.path.append('../CommanFile')
+import time;
 from MySQLHelper import MySQLHelper
 from PyQt4 import QtCore, QtGui
 
@@ -13,8 +14,8 @@ class logonEvent:
         self.main = main
 
     def loggon(self):
-        account = str(self.logon.le_account.text())
-        pwd = str(self.logon.le_pwd.text())
+        account = unicode(self.logon.le_account.text().toUtf8(),'utf-8','ignore').encode('utf-8')
+        pwd = unicode(self.logon.le_pwd.text().toUtf8(),'utf-8','ignore').encode('utf-8')
         sql="select count(*) from accountInfo where Account='{0}' and Pwd = '{1}'".format(account,pwd)
         count = sqlHelper.queryOnlyRow(sql).values()[0]
         if count>0:
@@ -23,7 +24,7 @@ class logonEvent:
             self.getAllCustom(account)
 
     def getHeadImg(self):
-        account = str(self.logon.le_account.text())
+        account = unicode(self.logon.le_account.text().toUtf8(),'utf-8','ignore').encode('utf-8')
         sql = "select HeadImg from accountInfo where Account like '%{0}%'".format(account)
         imgStr = sqlHelper.queryOnlyRow(sql).values()[0]
         png = QtGui.QPixmap(imgStr)
@@ -38,13 +39,14 @@ class logonEvent:
         data = sqlHelper.queryAll(sql)
         model = QtGui.QStandardItemModel(self.main.lv_customer)
         for row in data:
-            item = QtGui.QStandardItem(row['NickName'].decode('utf8'))
-            icon_expand = QtGui.QIcon(row['HeadImg'])
-            item.setIcon(icon_expand)
-            model.appendRow(item)
             if row['Account'] == account:
                 nickName = row['NickName']
                 headImg = row['HeadImg']
+            else:
+                item = QtGui.QStandardItem(row['NickName'].decode('utf8'))
+                icon_expand = QtGui.QIcon(row['HeadImg'])
+                item.setIcon(icon_expand)
+                model.appendRow(item)
         png = QtGui.QPixmap(headImg)
         self.main.lb_headImg.setScaledContents(True)
         self.main.lb_headImg.setPixmap(png)
@@ -58,27 +60,27 @@ class registerEvent:
 
     def reg(self):
         fontColorData={
-            "ColorCode":str(self.register.le_fontColor.text()),
+            "ColorCode":unicode(self.register.le_fontColor.text().toUtf8(),'utf-8','ignore').encode('utf-8'),
             "Des":""
         }
         sqlHelper.insert("fontColor",fontColorData)
         colorId = sqlHelper.getLastInsertRowId()
-        headImg = str(self.register.le_headImg.text()).replace('\\', '\\\\')
+        headImg = unicode(self.register.le_headImg.text().toUtf8(),'utf-8','ignore').encode('utf-8').replace('\\', '\\\\')
         accountInfoData={
-            "Account":str(self.register.le_accountName.text()),
-            "Pwd":str(self.register.le_pwd.text()),
+            "Account":unicode(self.register.le_accountName.text().toUtf8(),'utf-8','ignore').encode('utf-8'),
+            "Pwd":unicode(self.register.le_pwd.text().toUtf8(),'utf-8','ignore').encode('utf-8'),
             "HeadImg":headImg,
             "FontColorId":colorId,
         }
         sqlHelper.insert("accountInfo",accountInfoData)
         accountInfoId = sqlHelper.getLastInsertRowId()
-        sex = 1 if str(self.register.le_sex.text()).strip()=="男" else 0
+        sex = 1 if unicode(self.register.le_sex.text().toUtf8(),'utf-8','ignore').encode('utf-8').strip()=="男" else 0
         customerData={
-            "CustName":str(self.register.le_accountName.text()),
+            "CustName":unicode(self.register.le_custName.text().toUtf8(),'utf-8','ignore').encode('utf-8'),
             "Sex":sex,
-            "NickName":str(self.register.le_nickName.text()),
-            "Address":str(self.register.le_address.text()),
-            "Mobile":str(self.register.le_phone.text()),
+            "NickName":unicode(self.register.le_nickName.text().toUtf8(),'utf-8','ignore').encode('utf-8'),
+            "Address":unicode(self.register.le_address.text().toUtf8(),'utf-8','ignore').encode('utf-8'),
+            "Mobile":unicode(self.register.le_phone.text().toUtf8(),'utf-8','ignore').encode('utf-8'),
             "AcctountInfoId":accountInfoId
         }
         sqlHelper.insert("customer", customerData)
@@ -89,8 +91,6 @@ class mainEvent:
         self.message = message
 
     def openMessage(self,index):
-        #model = QtGui.QStandardItemModel(self.main.lv_customer)
-        #q = index.row()
         target_nickName = unicode(index.data().toString().toUtf8(),'utf-8','ignore').encode('utf-8')
         sql = "select NickName,Account,CustName,Address,Mobile,FontColorId,Sex,HeadImg \
                from customer as cust \
@@ -123,3 +123,27 @@ class mainEvent:
             item.setIcon(icon_expand)
             itemModel.appendRow(item)
         self.message.lv_message.setModel(itemModel)
+
+class messageEvent:
+    def __init__(self,message,main):
+        self.message = message
+        self.main = main
+
+    def sendMessage(self):
+        currentNick = unicode(self.main.lb_nick.text().toUtf8(),'utf-8','ignore').encode('utf-8')
+        targetNick = unicode(self.message.lb_nickName.text().toUtf8(),'utf-8','ignore').encode('utf-8')
+        sql = "select AcctountInfoId from Customer where NickName= '{0}'"
+        currentAccountId = sqlHelper.queryOnlyRow(sql.format(currentNick))["AcctountInfoId"]
+        targetAccountId = sqlHelper.queryOnlyRow(sql.format(targetNick))["AcctountInfoId"]
+        messageContent = unicode(self.message.te_talk.toPlainText().toUtf8(),'utf-8','ignore').encode('utf-8')
+        data ={
+            "SendAccount":currentAccountId,
+            "TargetAccount":targetAccountId,
+            "Message":messageContent,
+            "SendTime":time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
+        }
+        sqlHelper.insert("message",data)
+        self.message.te_talk.setHtml("")
+        main = mainEvent(self.main,self.message);
+        main.showMessageBox(targetNick,currentNick);
+

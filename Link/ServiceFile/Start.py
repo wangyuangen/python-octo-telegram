@@ -19,6 +19,7 @@ if __name__ == "__main__":
     mainEve = mainEvent(main,message)
     registerEve = registerEvent(register)                 #register事件
     logonEve = logonEvent(logon,main)                     #logon事件
+    messageEve = messageEvent(message,main)
 
     register.pb_register.clicked.connect(registerEve.reg)  #给注册按钮一个点击事件,该点击事件触发registerEve.reg
 
@@ -28,5 +29,7 @@ if __name__ == "__main__":
     logon.show()                                #登录窗体显示
 
     main.lv_customer.clicked.connect(mainEve.openMessage)
+
+    message.pb_send.clicked.connect(messageEve.sendMessage)
 
     sys.exit(app.exec_())                                   #等候退出
