@@ -31,5 +31,5 @@ if __name__ == "__main__":
     main.lv_customer.clicked.connect(mainEve.openMessage)
 
     message.pb_send.clicked.connect(messageEve.sendMessage)
-
+    message.pb_cancel.clicked.connect(message.close)
     sys.exit(app.exec_())                                   #等候退出
