@@ -1,12 +1,19 @@
 # -*- coding: utf-8 -*-
 import sys
 sys.path.append('../CommanFile')
-import time;
+import time
 from MySQLHelper import MySQLHelper
 from PyQt4 import QtCore, QtGui
+import ConfigParser
 
-sqlHelper = MySQLHelper("localhost", "root", "123456")
-sqlHelper.setDB("link")
+config = ConfigParser.ConfigParser()
+config.read('../CommanFile/config.ini')
+server = config.get('db','server')
+account = config.get('db','account')
+password = config.get('db','password')
+dbName = config.get('db','dbname')
+sqlHelper = MySQLHelper(server, account, password)
+sqlHelper.setDB(dbName)
 
 def strParse(object):
     return unicode(object.toUtf8(),'utf-8','ignore').encode('utf-8')
@@ -19,16 +26,18 @@ class logonEvent:
     def loggon(self):
         account = strParse(self.logon.le_account.text())
         pwd = strParse(self.logon.le_pwd.text())
-        sql="select count(*) from accountInfo where Account='{0}' and Pwd = '{1}'".format(account,pwd)
+        sql="select count(*) from accountinfo where Account='{0}' and Pwd = '{1}'".format(account,pwd)
         count = sqlHelper.queryOnlyRow(sql).values()[0]
         if count>0:
             self.logon.close()
             self.main.show()
             self.getAllCustom(account)
+        else:
+            QtGui.QMessageBox.information(self.logon, u'提示信息', u'登录失败,用户名或密码不存在!')
 
     def getHeadImg(self):
         account = strParse(self.logon.le_account.text())
-        sql = "select HeadImg from accountInfo where Account like '%{0}%'".format(account)
+        sql = "select HeadImg from accountinfo where Account like '%{0}%'".format(account)
         imgStr = sqlHelper.queryOnlyRow(sql).values()[0]
         png = QtGui.QPixmap(imgStr)
         self.logon.lb_headImg.setScaledContents(True)
@@ -37,7 +46,7 @@ class logonEvent:
     def getAllCustom(self,account):
         sql = "select NickName,Account,CustName,Address,Mobile,FontColorId,Sex,HeadImg \
                from customer as cust \
-               inner join accountInfo as info \
+               inner join accountinfo as info \
                on cust.AcctountInfoId = info.Id"
         data = sqlHelper.queryAll(sql)
         model = QtGui.QStandardItemModel(self.main.lv_customer)
@@ -67,7 +76,7 @@ class registerEvent:
             "ColorCode":strParse(self.register.le_fontColor.text()),
             "Des":""
         }
-        sqlHelper.insert("fontColor",fontColorData)
+        sqlHelper.insert("fontcolor",fontColorData)
         colorId = sqlHelper.getLastInsertRowId()
         headImg = strParse(self.register.le_headImg.text()).replace('\\', '\\\\')
         accountInfoData={
@@ -76,7 +85,7 @@ class registerEvent:
             "HeadImg":headImg,
             "FontColorId":colorId,
         }
-        sqlHelper.insert("accountInfo",accountInfoData)
+        sqlHelper.insert("accountinfo",accountInfoData)
         accountInfoId = sqlHelper.getLastInsertRowId()
         sex = 1 if strParse(self.register.le_sex.text()).strip()=="男" else 0
         customerData={
@@ -88,6 +97,7 @@ class registerEvent:
             "AcctountInfoId":accountInfoId
         }
         sqlHelper.insert("customer", customerData)
+        QtGui.QMessageBox.information(self.register,u'提示信息',u'用户信息注册成功')
 
     def openFile(self):
         fname = QtGui.QFileDialog.getOpenFileName(self.register, '打开文件','./',("Images (*.png *.xpm *.jpg)"))
@@ -148,7 +158,7 @@ class messageEvent:
     def sendMessage(self):
         currentNick = strParse(self.main.lb_nick.text())
         targetNick = strParse(self.message.lb_nickName.text())
-        sql = "select AcctountInfoId from Customer where NickName= '{0}'"
+        sql = "select AcctountInfoId from customer where NickName= '{0}'"
         currentAccountId = sqlHelper.queryOnlyRow(sql.format(currentNick))["AcctountInfoId"]
         targetAccountId = sqlHelper.queryOnlyRow(sql.format(targetNick))["AcctountInfoId"]
         messageContent = strParse(self.message.te_talk.toPlainText())
