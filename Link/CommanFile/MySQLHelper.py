@@ -1,10 +1,21 @@
 #--encoding:utf-8-- #
 
 import MySQLdb
-
+import sys
 
 class MySQLHelper:
     myVersion = 0.1
+
+    def getImgStr(self,imgPath):
+        try:
+            fin = open(imgPath,'rb')
+            img = fin.read()
+            fin.close()
+
+        except IOError, e:
+            print "Error %d: %s" % (e.args[0], e.args[1])
+            sys.exit(1)
+        return MySQLdb.escape_string(img)
 
     def __init__(self, host, user, password, charset="utf8"):
         self.host = host

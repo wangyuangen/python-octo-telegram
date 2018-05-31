@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+ # -*- coding: utf-8 -*-
 import sys
 sys.path.append('../CommanFile')
 import time
@@ -39,9 +39,10 @@ class logonEvent:
         account = strParse(self.logon.le_account.text())
         sql = "select HeadImg from accountinfo where Account like '%{0}%'".format(account)
         imgStr = sqlHelper.queryOnlyRow(sql).values()[0]
-        png = QtGui.QPixmap(imgStr)
+        photo = QtGui.QPixmap()
+        photo.loadFromData(QtCore.QByteArray(imgStr),'jpg')
         self.logon.lb_headImg.setScaledContents(True)
-        self.logon.lb_headImg.setPixmap(png)
+        self.logon.lb_headImg.setPixmap(photo)
 
     def getAllCustom(self,account):
         sql = "select NickName,Account,CustName,Address,Mobile,FontColorId,Sex,HeadImg \
@@ -78,7 +79,7 @@ class registerEvent:
         }
         sqlHelper.insert("fontcolor",fontColorData)
         colorId = sqlHelper.getLastInsertRowId()
-        headImg = strParse(self.register.le_headImg.text()).replace('\\', '\\\\')
+        headImg = sqlHelper.getImgStr(strParse(self.register.le_headImg.text()))
         accountInfoData={
             "Account":strParse(self.register.le_accountName.text()),
             "Pwd":strParse(self.register.le_pwd.text()),
