@@ -57,7 +57,10 @@ class logonEvent:
                 headImg = row['HeadImg']
             else:
                 item = QtGui.QStandardItem(row['NickName'].decode('utf8'))
-                icon_expand = QtGui.QIcon(row['HeadImg'])
+                img = open('head.jpb','wb')
+                img.write(row['HeadImg'])
+                img.close()
+                icon_expand = QtGui.QIcon(img.name)
                 item.setIcon(icon_expand)
                 item.setBackground(QtGui.QBrush(QtCore.Qt.lightGray))
                 model.appendRow(item)
@@ -148,7 +151,10 @@ class mainEvent:
                    left join fontcolor as color \
                    on info.fontColorId = color.Id where info.Id ={0}".format(sendAccount)
             sendData = sqlHelper.queryOnlyRow(sql)
-            icon_expand = QtGui.QIcon(sendData['HeadImg'])
+            img = open('head.img','wb')
+            img.write(sendData['HeadImg'])
+            img.close()
+            icon_expand = QtGui.QIcon(img.name)
             item.setIcon(icon_expand)
             itemModel.appendRow(item)
         self.message.lv_message.setModel(itemModel)
