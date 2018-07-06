@@ -15,7 +15,7 @@ def login_form(request):
 def login(request):
     context={}
     request.encoding = 'utf-8'
-    sqlHelper = MySQLHelper('47.75.63.12','root','root')
+    sqlHelper = MySQLHelper('localhost','root','root')
     sqlHelper.setDB('link')
     account = request.GET['account']
     pwd =request.GET['passWord']
